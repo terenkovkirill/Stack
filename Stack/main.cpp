@@ -20,7 +20,7 @@ typedef double StackElem_t;
             StackCtor(ad_stack, capacity)
 
 #define STACK_ASSERT(ad_stack) \
-        StackAssertFunc(ad_stack, __FILE__, __LINE__)
+        StackAssertFunc(ad_stack/*, __FILE__, __LINE__*/)
 
 struct Stack  // _t
 {
@@ -33,9 +33,9 @@ struct Stack  // _t
 };
 
 void StackCtor(struct Stack *ad_stack, int capacity ON_DEBUG(, char* name, char* file, int line));
-void StackAssertFunc(struct Stack *ad_stack, char* file, int line);
+void StackAssertFunc(struct Stack *ad_stack/*, const char* file, int line*/);
 int StackError(struct Stack *ad_stack);
-void StackDump(struct Stack *ad_stack, char* file, int line);
+void StackDump(struct Stack *ad_stack, const char* file, int line);
 void StackPush(struct Stack *ad_stack, StackElem_t elem);
 void StackPop(struct Stack *ad_stack, StackElem_t* x);
 void StackDestructor(struct Stack *ad_stack);
@@ -46,7 +46,7 @@ void PrintStack(struct Stack *ad_stack);
 int main()
 {
     struct Stack stack = {};
-    STACK_CTOR(&stack, 2);                   //правильно ли я передаю адрес stack в через макрос?
+    STACK_CTOR(&stack, 2);                   
 
     PrintStack(&stack);
 
@@ -78,7 +78,7 @@ void StackCtor(struct Stack *ad_stack, int capacity ON_DEBUG(, char* name, char*
     ON_DEBUG(ad_stack->file = file;)                                             
     ON_DEBUG(ad_stack->line = line;)
 
-    STACK_ASSERT(ad_stack);                                             //где внутри функции дожен быть расположен этот assert ?
+    STACK_ASSERT(ad_stack);                                             
 }
 
 
@@ -130,7 +130,7 @@ void PrintStack(struct Stack *ad_stack)
 }
 
 
-int StackError(struct Stack *ad_stack)         //написанa точно неправильно, нужно подправить
+int StackError(struct Stack *ad_stack)         //фигово написано
 {
     if (!(ad_stack && ad_stack->data))
     {
@@ -145,20 +145,38 @@ int StackError(struct Stack *ad_stack)         //написанa точно не
     return 1;
 }
 
-void StackAssertFunc(struct Stack *ad_stack, char* file, int line)         //тоже написана неправильно
+void StackAssertFunc(struct Stack *ad_stack /*, const char* file, int line*/)         //фигово написано
 {
     if (!StackError(ad_stack))
     {
-        StackDump(ad_stack, __FILE__, __LINE__);            //указатели на какой файл и строку передаются при вызове этих макросов ?
+        StackDump(ad_stack, __FILE__, __LINE__);           
         assert(0);
     }
 }
 
-void StackDump(struct Stack *ad_stack, char* file, int line)         //тоже написана неправильно
+void StackDump(struct Stack *ad_stack, const char* file, int line)         //фигово написано
 {
-    printf("called from %c : %d \n", file, line);
-    printf("address stack = %d \n", ad_stack);
-    printf("address data = %d \n", ad_stack->data);
+    printf("called from %s : %d \n", file, line);
+    printf("address stack = %p \n", ad_stack);
+    printf("address data = %p \n", ad_stack->data);
     printf("stack size = %d \n", ad_stack->size);
     printf("stack capacity = %d \n", ad_stack->capacity);
 }
+
+
+
+
+//как и куда закидывать POISON значения ?
+//кусок лекции с непонятным тексом, про dump?
+//как реализовать realloc в Pop ?
+//как работает ifdef и endif ?
+//когда size = 0 указатель на структуру делаем NULL
+
+
+
+/*
+Написать recalloc, который:
+проверяет не равен ли указатель, возвращаемый realloc NULL
+заполняет все пустые элементы в конце возвращённого realloc массива POISON значениями
+
+*/
