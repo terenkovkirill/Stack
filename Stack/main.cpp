@@ -1,22 +1,26 @@
 #include <TXLib.h>
 #include <stdio.h>
+#include <assert.h>
 
 //#define DEBUG
 #define NO_ITEMS 0
 typedef double StackElem_t; 
 
-#ifdef DEBUG                                                    //почему макрос определяется именно в такой форме ?
+#ifdef DEBUG                                                    
     #define ON_DEBUG(...) __VA_ARGS__
 #else
     #define ON_DEBUG(...)
+#endif                                                                   
+
+#ifdef DEBUG
+    #define STACK_CTOR(ad_stack, capacity) \
+            StackCtor(ad_stack, capacity, #ad_stack, __FILE__, __LINE__)
 #endif
+    #define STACK_CTOR(ad_stack, capacity) \
+            StackCtor(ad_stack, capacity)
 
-#define STACK_CTOR(ad_stack, capacity) \                                         
-        StackCtor(ad_stack, capacity, #ad_stack, __FILE__, __LINE__)                  
-                                                                                
-
-#define STACK_ASSERT(ad_stack) \                                                 
-    StackAssertFunc(ad_stack, __FILE__, __LINE__)
+#define STACK_ASSERT(ad_stack) \
+        StackAssertFunc(ad_stack, __FILE__, __LINE__)
 
 struct Stack  // _t
 {
@@ -34,7 +38,7 @@ int StackError(struct Stack *ad_stack);
 void StackDump(struct Stack *ad_stack, char* file, int line);
 void StackPush(struct Stack *ad_stack, StackElem_t elem);
 void StackPop(struct Stack *ad_stack, StackElem_t* x);
-void StackFree(struct Stack *ad_stack);
+void StackDestructor(struct Stack *ad_stack);
 void PrintStack(struct Stack *ad_stack);
 
 
@@ -59,7 +63,7 @@ int main()
         PrintStack(&stack);
     }
 
-    StackFree(&stack);
+    StackDestructor(&stack);
 
     return 0;
 }
@@ -71,7 +75,7 @@ void StackCtor(struct Stack *ad_stack, int capacity ON_DEBUG(, char* name, char*
     ad_stack->capacity = capacity;
     ad_stack->data = (StackElem_t *)calloc(capacity, sizeof(StackElem_t));
     ON_DEBUG(ad_stack->name = name;) 
-    ON_DEBUG(ad_stack->file = file;)                                                 //нужны ли здесь макросы и знак ; после них ?
+    ON_DEBUG(ad_stack->file = file;)                                             
     ON_DEBUG(ad_stack->line = line;)
 
     STACK_ASSERT(ad_stack);                                             //где внутри функции дожен быть расположен этот assert ?
@@ -88,7 +92,7 @@ void StackPush(struct Stack *ad_stack, StackElem_t elem)
         ad_stack->data = (StackElem_t *)realloc(ad_stack->data, sizeof(StackElem_t) * ad_stack->capacity);
     }
     
-    ad_stack->data[(ad_stack->size] = elem;
+    ad_stack->data[ad_stack->size] = elem;
     ad_stack->size++;
 
     STACK_ASSERT(ad_stack);
@@ -108,7 +112,7 @@ void StackPop(struct Stack *ad_stack, StackElem_t* x)
 }
 
 
-void StackFree(struct Stack *ad_stack)
+void StackDestructor(struct Stack *ad_stack)
 {
     //assert(ad_stack != NULL);
     free(ad_stack->data);
