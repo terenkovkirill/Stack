@@ -7,6 +7,7 @@
 #define NO_ITEMS 0
 #define FILENAME 
 typedef double StackElem_t;
+typedef uint64_t Canary_t;
 
 
 #ifdef DEBUG                                                    
@@ -54,5 +55,6 @@ void StackPush(struct Stack_t *ad_stack, StackElem_t elem, const char* filename)
 void StackPop(struct Stack_t *ad_stack, StackElem_t* x, const char* filename);
 void StackDestructor(struct Stack_t *ad_stack);
 void PrintStack(struct Stack_t *ad_stack);
+void StackAssertFunc(struct Stack_t *ad_stack, const char* filename/*, const char* file, int line*/);
 
 #endif

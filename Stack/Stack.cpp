@@ -1,10 +1,12 @@
 #include <TXLib.h>
-//#include <stdio.h>
 #include <assert.h>
+#include "Stack.h"
+#include "Checkout.h"                   
 
 
 void StackCtor(struct Stack_t *ad_stack, int capacity, const char* filename ON_DEBUG(, const char* name, const char* file, int line))
 {
+    assert(ad_stack != NULL);       //убираю assert 
     ad_stack->size = 0;
     ad_stack->capacity = capacity;
     
@@ -35,7 +37,7 @@ void StackPush(struct Stack_t *ad_stack, StackElem_t elem, const char* filename)
     ad_stack->data[ad_stack->size] = elem;
     ad_stack->size++;
 
-    STACK_ASSERT(ad_stack, filename);
+    STACK_ASSERT(ad_stack, filename);           
 }
 
 

@@ -4,7 +4,7 @@
 #define STACK_DUMP(ad_stack, filename)  \
         StackDump(ad_stack, filename, __FILE__, __LINE__)
 
-enum StackError {
+enum StackErr_t {
     STACK_NO_ERROR = 0,
     STACK_NULL = 1,
     STACK_DATA_NULL = 2,
@@ -13,6 +13,5 @@ enum StackError {
 };
 
 
-void StackAssertFunc(struct Stack_t *ad_stack, const char* filename/*, const char* file, int line*/);
-int StackError(struct Stack_t *ad_stack);
-void StackDump(struct Stack_t *ad_stack, const char* filename, const char* file, int line);
+StackErr_t StackError(struct Stack_t *ad_stack);
+StackErr_t StackDump(struct Stack_t *ad_stack, const char* filename, const char* file, int line);
