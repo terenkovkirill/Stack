@@ -2,64 +2,35 @@
 #include <stdio.h>
 #include <assert.h>
 
-//#define DEBUG
-#define NO_ITEMS 0
-typedef double StackElem_t; 
+#include "Stack.h"
+#include "Checkout.h"
 
-#ifdef DEBUG                                                    
-    #define ON_DEBUG(...) __VA_ARGS__
-#else
-    #define ON_DEBUG(...)
-#endif                                                                   
+// typedef canary_t double
 
-#ifdef DEBUG
-    #define STACK_CTOR(ad_stack, capacity) \
-            StackCtor(ad_stack, capacity, #ad_stack, __FILE__, __LINE__)
-#endif
-    #define STACK_CTOR(ad_stack, capacity) \
-            StackCtor(ad_stack, capacity)
 
-#define STACK_ASSERT(ad_stack) \
-        StackAssertFunc(ad_stack/*, __FILE__, __LINE__*/)
 
-struct Stack  // _t
+int main(int argc, const char *argv[])
 {
-    StackElem_t* data;
-    int size;
-    int capacity;
-    ON_DEBUG(char* name;)
-    ON_DEBUG(char* file;)
-    ON_DEBUG(int line;)
-};
-
-void StackCtor(struct Stack *ad_stack, int capacity ON_DEBUG(, char* name, char* file, int line));
-void StackAssertFunc(struct Stack *ad_stack/*, const char* file, int line*/);
-int StackError(struct Stack *ad_stack);
-void StackDump(struct Stack *ad_stack, const char* file, int line);
-void StackPush(struct Stack *ad_stack, StackElem_t elem);
-void StackPop(struct Stack *ad_stack, StackElem_t* x);
-void StackDestructor(struct Stack *ad_stack);
-void PrintStack(struct Stack *ad_stack);
-
-
-
-int main()
-{
-    struct Stack stack = {};
-    STACK_CTOR(&stack, 2);                   
-
-    PrintStack(&stack);
-
-    for (int i = 0; i < 5; i++)
+    if (argc != 2)
     {
-        StackPush(&stack, i);
-        PrintStack(&stack);
+        printf("Erroneous number elements %d", argc);
     }
+    
+    struct Stack_t stack = {};
+    STACK_CTOR(&stack, 2, argv[1]);                   
+    
+    PrintStack(&stack);
     
     for (int i = 0; i < 5; i++)
     {
+        StackPush(&stack, i, argv[1]);
+        PrintStack(&stack);
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
         StackElem_t x = 0;
-        StackPop(&stack, &x);
+        StackPop(&stack, &x, argv[1]);
         PrintStack(&stack);
     }
 
@@ -69,58 +40,7 @@ int main()
 }
 
 
-void StackCtor(struct Stack *ad_stack, int capacity ON_DEBUG(, char* name, char* file, int line))
-{
-    ad_stack->size = 0;
-    ad_stack->capacity = capacity;
-    ad_stack->data = (StackElem_t *)calloc(capacity, sizeof(StackElem_t));
-    ON_DEBUG(ad_stack->name = name;) 
-    ON_DEBUG(ad_stack->file = file;)                                             
-    ON_DEBUG(ad_stack->line = line;)
-
-    STACK_ASSERT(ad_stack);                                             
-}
-
-
-void StackPush(struct Stack *ad_stack, StackElem_t elem)
-{
-    STACK_ASSERT(ad_stack);
-
-    if (ad_stack->size == ad_stack->capacity)
-    {
-        ad_stack->capacity  = 2 * ad_stack->capacity;
-        ad_stack->data = (StackElem_t *)realloc(ad_stack->data, sizeof(StackElem_t) * ad_stack->capacity);
-    }
-    
-    ad_stack->data[ad_stack->size] = elem;
-    ad_stack->size++;
-
-    STACK_ASSERT(ad_stack);
-}
-
-void StackPop(struct Stack *ad_stack, StackElem_t* x)
-{
-    /*
-    if ((*ad_stack).size == 0) 
-    {
-        return NO_ITEMS;
-    }
-    */
-    *x = ad_stack->data[ad_stack->size];
-    ad_stack->size--;
-
-}
-
-
-void StackDestructor(struct Stack *ad_stack)
-{
-    //assert(ad_stack != NULL);
-    free(ad_stack->data);
-    ad_stack->size = 0;
-    ad_stack->capacity = 0;
-}
-
-void PrintStack(struct Stack *ad_stack)
+void PrintStack(struct Stack_t *ad_stack)
 {
     for (int i  = 0; i < ad_stack->size; i++)
     {
@@ -130,53 +50,15 @@ void PrintStack(struct Stack *ad_stack)
 }
 
 
-int StackError(struct Stack *ad_stack)         //фигово написано
-{
-    if (!(ad_stack && ad_stack->data))
-    {
-        return 0;
-    }
-    
-    if (ad_stack->size < 0)
-    {
-        return 0;
-    }
-
-    return 1;
-}
-
-void StackAssertFunc(struct Stack *ad_stack /*, const char* file, int line*/)         //фигово написано
-{
-    if (!StackError(ad_stack))
-    {
-        StackDump(ad_stack, __FILE__, __LINE__);           
-        assert(0);
-    }
-}
-
-void StackDump(struct Stack *ad_stack, const char* file, int line)         //фигово написано
-{
-    printf("called from %s : %d \n", file, line);
-    printf("address stack = %p \n", ad_stack);
-    printf("address data = %p \n", ad_stack->data);
-    printf("stack size = %d \n", ad_stack->size);
-    printf("stack capacity = %d \n", ad_stack->capacity);
-}
+//когда size = 0 указатель на структуру делаем NULL (при уменьшении размера)
 
 
 
-
-//как и куда закидывать POISON значения ?
-//кусок лекции с непонятным тексом, про dump?
-//как реализовать realloc в Pop ?
-//как работает ifdef и endif ?
-//когда size = 0 указатель на структуру делаем NULL
-
+// TODO:
+// 1) StackRealloc() (расширение + FillPoizonValue(Stack* stk, size_t size_to fill))   +
+// 2) Потом с Enum StackError разобраться                                              +
+// 3) добавляешь канарейки
+// 4) хеш функции
 
 
-/*
-Написать recalloc, который:
-проверяет не равен ли указатель, возвращаемый realloc NULL
-заполняет все пустые элементы в конце возвращённого realloc массива POISON значениями
-
-*/
+// вот тут про то, что мы говорили, но для Сани типо не говорили
