@@ -30,11 +30,12 @@ typedef uint64_t Canary_t;
 const StackElem_t POIZON_VALUE_FOR_DATA = (StackElem_t)0xDEDEBEDBAD;            //что опроисходит с 16ричным числом ?
 const int POIZON_VALUE_FOR_SIZE = (int)0xBADCAFE;
 const int POISON_VALUE_FOR_CAPACITY = (int)0xFEEDDEDBAD;
+const Canary_t POISON_VALUE_FOR_CANARY = (Canary_t)0xBADEDA;
 
 
 struct Stack_t
 {
-    // canary_t
+    Canary_t c1;      
 
     StackElem_t* data;
     int size;
@@ -44,7 +45,7 @@ struct Stack_t
     ON_DEBUG(const char* file;)
     ON_DEBUG(int line;)
 
-    // canary_t
+    Canary_t c2;     
 };
 
 

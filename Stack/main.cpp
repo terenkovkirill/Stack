@@ -5,8 +5,6 @@
 #include "Stack.h"
 #include "Checkout.h"
 
-// typedef canary_t double
-
 
 
 int main(int argc, const char *argv[])
@@ -42,6 +40,7 @@ int main(int argc, const char *argv[])
 
 void PrintStack(struct Stack_t *ad_stack)
 {
+    assert(ad_stack != NULL);
     for (int i  = 0; i < ad_stack->size; i++)
     {
         printf("%g ", ad_stack->data[i]);
