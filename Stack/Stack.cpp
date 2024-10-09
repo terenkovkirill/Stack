@@ -14,6 +14,7 @@ void StackCtor(struct Stack_t *ad_stack, int capacity, const char* filename ON_D
     
     int balance_for_align = 8 - (capacity * sizeof(StackElem_t)) % 8;
     Canary_t* ad_c1 = (Canary_t *)calloc(1, capacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t) +  balance_for_align);
+    printf("--%p\n", ad_c1);
     *ad_c1 = ad_stack->c1;
 
     ad_stack->data = (StackElem_t *)((char*)ad_c1 + sizeof(Canary_t));
@@ -64,7 +65,10 @@ void StackRealloc(struct Stack_t *ad_stack, const char* filename)
     ad_stack->capacity  = 2 * ad_stack->capacity;
     
     int balance_for_align = 8 - (ad_stack->capacity * sizeof(StackElem_t)) % 8;
-    Canary_t* ad_c1 = (Canary_t *)realloc(ad_stack->data, ad_stack->capacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t) +  balance_for_align);
+    size_t new_capacity = ad_stack->capacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t) +  balance_for_align;
+    printf("%p %lu\n", ad_stack->data, new_capacity);
+    Canary_t* ad_c1 = (Canary_t *)realloc((char*)ad_stack->data - sizeof(Canary_t), new_capacity);
+    printf("%p %p %lu\n", ad_c1, ad_stack->data, new_capacity);
             
     printf("%d \n", 1000);
     *ad_c1 = ad_stack->c1;    //в этой строчке всё ложится
