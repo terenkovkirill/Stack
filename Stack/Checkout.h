@@ -1,3 +1,5 @@
+#ifndef CHECKOUT_H
+#define CHECKOUT_H
 #include <TXLib.h>
 #include "Stack.h"
 
@@ -15,3 +17,5 @@ enum StackErr_t {
 
 StackErr_t StackError(struct Stack_t *ad_stack);
 StackErr_t StackDump(struct Stack_t *ad_stack, const char* filename, const char* file, int line);
+
+#endif

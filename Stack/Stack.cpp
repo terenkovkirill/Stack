@@ -14,10 +14,12 @@ void StackCtor(struct Stack_t *ad_stack, int capacity, const char* filename ON_D
     
     int balance_for_align = 8 - (capacity * sizeof(StackElem_t)) % 8;
     Canary_t* ad_c1 = (Canary_t *)calloc(1, capacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t) +  balance_for_align);
-    printf("--%p\n", ad_c1);
+    //printf("--%p\n", ad_c1);
     *ad_c1 = ad_stack->c1;
 
     ad_stack->data = (StackElem_t *)((char*)ad_c1 + sizeof(Canary_t));
+
+    FillPoisonValue(ad_stack);
 
     Canary_t* ad_c2 = (Canary_t *)((char*)ad_stack->data + capacity * sizeof(StackElem_t) + balance_for_align);
     *ad_c2 = ad_stack->c2;
@@ -25,7 +27,7 @@ void StackCtor(struct Stack_t *ad_stack, int capacity, const char* filename ON_D
     ad_stack->status = STACK_NO_ERROR;
 
     ON_DEBUG(ad_stack->name = name;) 
-    ON_DEBUG(ad_stack->file = file;)                                             
+    ON_DEBUG(ad_stack->file = file;)                                          
     ON_DEBUG(ad_stack->line = line;)
     STACK_ASSERT(ad_stack, filename);                                             
 }
@@ -65,14 +67,13 @@ void StackRealloc(struct Stack_t *ad_stack, const char* filename)
     ad_stack->capacity  = 2 * ad_stack->capacity;
     
     int balance_for_align = 8 - (ad_stack->capacity * sizeof(StackElem_t)) % 8;
-    size_t new_capacity = ad_stack->capacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t) +  balance_for_align;
-    printf("%p %lu\n", ad_stack->data, new_capacity);
-    Canary_t* ad_c1 = (Canary_t *)realloc((char*)ad_stack->data - sizeof(Canary_t), new_capacity);
-    printf("%p %p %lu\n", ad_c1, ad_stack->data, new_capacity);
-            
-    printf("%d \n", 1000);
-    *ad_c1 = ad_stack->c1;    //в этой строчке всё ложится
-    printf("%d \n", 2000);
+    size_t realloc_memory = ad_stack->capacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t) +  balance_for_align;
+
+    //printf("%p %lu\n", ad_stack->data, realloc_memory);
+    Canary_t* ad_c1 = (Canary_t *)realloc((char*)ad_stack->data - sizeof(Canary_t), realloc_memory);
+    //printf("%p %p %lu\n", ad_c1, ad_stack->data, realloc_memory);    
+    *ad_c1 = ad_stack->c1;   
+    
     ad_stack->data = (StackElem_t *)((char*)ad_c1 + sizeof(Canary_t));
 
     FillPoisonValue(ad_stack);
@@ -99,3 +100,6 @@ void StackDestructor(struct Stack_t *ad_stack)
     ad_stack->capacity = POISON_VALUE_FOR_CAPACITY;
 }
 
+
+// dump из if 
+// 

@@ -5,8 +5,6 @@
 #include "Stack.h"
 #include "Checkout.h"
 
-
-
 int main(int argc, const char *argv[])
 {
     if (argc != 2)
@@ -27,6 +25,7 @@ int main(int argc, const char *argv[])
 
     for (int i = 0; i < 5; i++)
     {
+        STACK_ASSERT(&stack, argv[1]);   //здесь не нужно, но почему записывает в файлы лишь единожды?
         StackElem_t x = 0;
         StackPop(&stack, &x, argv[1]);
         PrintStack(&stack);

@@ -1,12 +1,12 @@
-#ifndef READING_H
-#define READING_H
+#ifndef STACK_H
+#define STACK_H
 
 #include <TXLib.h>
 
 //#define DEBUG
 #define NO_ITEMS 0
 #define FILENAME 
-typedef double StackElem_t;
+typedef uint8_t StackElem_t;
 typedef uint64_t Canary_t;
 
 
@@ -14,7 +14,7 @@ typedef uint64_t Canary_t;
     #define ON_DEBUG(...) __VA_ARGS__
 #else
     #define ON_DEBUG(...)
-#endif                                                                   
+#endif    
 
 #ifdef DEBUG
     #define STACK_CTOR(ad_stack, capacity, filename) \
@@ -24,7 +24,7 @@ typedef uint64_t Canary_t;
             StackCtor(ad_stack, capacity, filename)
 
 #define STACK_ASSERT(ad_stack, filename) \
-        StackAssertFunc(ad_stack, filename/*, __FILE__, __LINE__*/)
+        StackAssertFunc(ad_stack, filename /*, __FILE__, __LINE__*/)
 
 
 const StackElem_t POIZON_VALUE_FOR_DATA = (StackElem_t)0xDEDEBEDBAD;            //что опроисходит с 16ричным числом ?
