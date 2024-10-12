@@ -102,4 +102,5 @@ void StackDestructor(struct Stack_t *ad_stack)
 
 
 // dump из if 
+//kdfskngjgbj;jabj;b
 // 

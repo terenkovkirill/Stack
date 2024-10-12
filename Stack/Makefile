@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-c -Wall 
+CFLAGS=-c -Wall -DDEBUG
 
 main.exe: main.o Stack.o Checkout.o
 	$(CC) main.o Stack.o Checkout.o -o main.exe
