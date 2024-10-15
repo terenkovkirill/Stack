@@ -11,27 +11,31 @@ int main(int argc, const char *argv[])
     {
         printf("Erroneous number elements %d", argc);
     }
+
+    FILE* dump_file = fopen(argv[1], "wb");
     
     struct Stack_t stack = {};
-    STACK_CTOR(&stack, 2, argv[1]);                   
+    STACK_CTOR(&stack, 2, dump_file);                   
     
     PrintStack(&stack);
     
     for (int i = 0; i < 5; i++)
     {
-        StackPush(&stack, i, argv[1]);
+        StackPush(&stack, StackElem_t(i));
         PrintStack(&stack);
     }
 
     for (int i = 0; i < 5; i++)
     {
-        STACK_ASSERT(&stack, argv[1]);   //здесь не нужно, но почему записывает в файлы лишь единожды?
+        STACK_ASSERT(&stack);   //здесь не нужно, но почему записывает в файлы лишь единожды?
         StackElem_t x = 0;
-        StackPop(&stack, &x, argv[1]);
+        StackPop(&stack, &x);
         PrintStack(&stack);
     }
 
     StackDestructor(&stack);
+
+    fclose(dump_file);
 
     return 0;
 }
@@ -42,7 +46,7 @@ void PrintStack(struct Stack_t *ad_stack)
     assert(ad_stack != NULL);
     for (int i  = 0; i < ad_stack->size; i++)
     {
-        printf("%g ", ad_stack->data[i]);
+        printf("%u ", ad_stack->data[i]);
     }
     printf("\n");
 }
