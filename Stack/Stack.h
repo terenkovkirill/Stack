@@ -17,12 +17,12 @@ typedef uint64_t Canary_t;
 #endif    
 
 #ifdef DEBUG
-    #define STACK_CTOR(ad_stack, capacity, fileptr) {\
-            StackCtor(ad_stack, capacity, fileptr, #ad_stack, __FILE__, __LINE__);\
+    #define STACK_CTOR(ad_stack, capacity, dmp_file) {\
+            StackCtor(ad_stack, capacity, dmp_file, #ad_stack, __FILE__, __LINE__);\
     }
 #else
-    #define STACK_CTOR(ad_stack, capacity, fileptr) {\
-        StackCtor(ad_stack, capacity, fileptr);\
+    #define STACK_CTOR(ad_stack, capacity, dump_file) {\
+        StackCtor(ad_stack, capacity, dump_file);\
     }
 #endif
 
@@ -54,7 +54,7 @@ struct Stack_t
 };
 
 
-void StackCtor(struct Stack_t *ad_stack, int capacity, FILE* fileptr ON_DEBUG(, const char* name, const char* file, int line));
+void StackCtor(struct Stack_t *ad_stack, int capacity, const char* dmp_file ON_DEBUG(, const char* name, const char* file, int line));
 void StackRealloc(struct Stack_t *ad_stack);
 void FillPoisonValue(struct Stack_t *ad_stack);
 void StackPush(struct Stack_t *ad_stack, StackElem_t elem);

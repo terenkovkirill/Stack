@@ -12,10 +12,10 @@ int main(int argc, const char *argv[])
         printf("Erroneous number elements %d", argc);
     }
 
-    FILE* dump_file = fopen(argv[1], "wb");
+    //FILE* dump_file = fopen(argv[1], "wb");
     
     struct Stack_t stack = {};
-    STACK_CTOR(&stack, 2, dump_file);                   
+    STACK_CTOR(&stack, 2, argv[1]);                   
     
     PrintStack(&stack);
     
@@ -35,7 +35,7 @@ int main(int argc, const char *argv[])
 
     StackDestructor(&stack);
 
-    fclose(dump_file);
+    //fclose(dump_file);
 
     return 0;
 }

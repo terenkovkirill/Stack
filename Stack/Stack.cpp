@@ -2,21 +2,33 @@
 #include <assert.h>
 
 #include "Stack.h"
-#include "Checkout.h"                   
+#include "Checkout.h"   
+/*
+#define DBG
+#ifdef DBG
+    #define if (1)
+#else
+    #define if (0)
+#endif 
+*/    
 
-void StackCtor(struct Stack_t *ad_stack, int capacity, FILE* fileptr ON_DEBUG(, const char* name, const char* file, int line))
+void StackCtor(struct Stack_t *ad_stack, int capacity, const char* dmp_file ON_DEBUG(, const char* name, const char* file, int line))
 {
     assert(ad_stack != NULL);       //убираю assert 
     ad_stack->size = 0;
     ad_stack->capacity = capacity;
-    ad_stack->dump_file = fileptr;
+
+    FILE* dump_file = fopen(dmp_file, "wb");
+
+    ad_stack->dump_file = dump_file;
     ad_stack->c1 = STACK_CANARY;
     ad_stack->c2 = STACK_CANARY;
     
     int balance_for_align = 8 - (capacity * sizeof(StackElem_t)) % 8;
     Canary_t* ad_c1 = (Canary_t *)calloc(1, capacity * sizeof(StackElem_t) + 2 * sizeof(Canary_t) +  balance_for_align);
-    //printf("--%p\n", ad_c1);
+    //DBG printf("--%p\n", ad_c1);
     *ad_c1 = DATA_CANARY;
+    //printf("%I64d data canary first fime \n", *ad_c1);
 
     ad_stack->data = (StackElem_t *)((char*)ad_c1 + sizeof(Canary_t));
 
@@ -24,6 +36,7 @@ void StackCtor(struct Stack_t *ad_stack, int capacity, FILE* fileptr ON_DEBUG(, 
 
     Canary_t* ad_c2 = (Canary_t *)((char*)ad_stack->data + capacity * sizeof(StackElem_t) + balance_for_align);
     *ad_c2 = DATA_CANARY;
+    //printf("%I64d data canary first time \n", *ad_c2);
 
     ad_stack->status = STACK_NO_ERROR;
 
@@ -99,8 +112,15 @@ void StackDestructor(struct Stack_t *ad_stack)
     free(ad_stack->data);
     ad_stack->size = POISON_VALUE_FOR_SIZE;
     ad_stack->capacity = POISON_VALUE_FOR_CAPACITY;
+
+    fclose(ad_stack->dump_file);
     ad_stack->dump_file = NULL;
 }
 
-
-// наладить возможность запуска c DEBUG
+/*
+Проблемы:
+    1) Канарейки стека различаются в Log.txt
+    2) Канарейки data различаются до определённого момента
+    3) Как сделать вывод сообщения об ошибках в канарейках? Обязательным в верификаторе?
+    4) Разобрать с тем, почему не работает DBG
+*/
